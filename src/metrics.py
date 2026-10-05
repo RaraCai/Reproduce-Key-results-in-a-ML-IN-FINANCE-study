@@ -12,7 +12,7 @@ def eval_oos_performance(
       R2_paper   = 1 - E[(R - R_hat)^2] / E[R^2]      (Prop. 3, uncentered)
       exp_return = E[R^pi],  R^pi = R_hat * R          (timing return)
       sharpe     = E[R^pi] / sqrt(E[(R^pi)^2])         (Eq. 5, uncentered)
-      sharpe_var = E[R^pi] / sqrt(Var(R^pi))           (secondary diagnostic)
+    sharpe_var = E[R^pi] / sqrt(Var(R^pi))           (secondary diagnostic)
       beta_norm_sq = ||beta_hat||_2^2
 
     Returns a dict of scalars.
@@ -30,7 +30,6 @@ def eval_oos_performance(
     second_moment = np.mean(R_pi ** 2)
     sharpe = exp_return / np.sqrt(second_moment) if second_moment > 1e-12 else 0.0
 
-    # Centered version as a secondary diagnostic
     var_pi = np.var(R_pi)
     sharpe_var = exp_return / np.sqrt(var_pi) if var_pi > 1e-12 else 0.0
 

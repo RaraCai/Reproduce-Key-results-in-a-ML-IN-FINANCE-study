@@ -1,8 +1,39 @@
 # src/__init__.py
 
-from .config import DGP_DEFAULTS, CQ_GRID, Z_GRID, N_RUNS, SEED, FIG_DIR, RESULT_DIR
-from .dgp import generate_dgp_data, get_observed_block
-from .models import fit_ridge, fit_ridge_path
+from .config import (
+    DGP_DEFAULTS,
+    CQ_GRID,
+    Z_GRID,
+    N_RUNS,
+    SEED,
+    FIG_DIR,
+    RESULT_DIR,
+    LASSO_ALPHA_FRACTIONS,
+    LASSO_VALIDATION_FRACTION,
+    LASSO_TOL,
+    LASSO_PATH_MAX_ITER,
+    LASSO_REFIT_MAX_ITER,
+    LASSO_FIT_INTERCEPT,
+    LASSO_SELECTION,
+    TASK3_OUTER_TRAIN_FRACTIONS,
+    TASK3_INNER_VALIDATION_FRACTION,
+    TASK3_RIDGE_Z_GRID,
+    TASK3_ELASTIC_L1_RATIOS,
+    TASK3_ELASTIC_ALPHA_FRACTIONS,
+    TASK3_COMPONENT_COUNTS,
+    TASK3_ELASTIC_MAX_ITER,
+    TASK3_ELASTIC_TOL,
+    TASK3_PLS_MAX_ITER,
+    TASK3_PLS_TOL,
+)
+from .dgp import generate_dgp_data, generate_dgp_run, get_observed_block
+from .models import (
+    fit_lasso_with_validation,
+    fit_task3_model_with_validation,
+    fit_ridge,
+    fit_ridge_path,
+    fit_ridge_with_validation,
+)
 from .metrics import eval_oos_performance, expand_beta, param_error
 
 __all__ = [
@@ -14,11 +45,32 @@ __all__ = [
     "SEED",
     "FIG_DIR",
     "RESULT_DIR",
+    "LASSO_ALPHA_FRACTIONS",
+    "LASSO_VALIDATION_FRACTION",
+    "LASSO_TOL",
+    "LASSO_PATH_MAX_ITER",
+    "LASSO_REFIT_MAX_ITER",
+    "LASSO_FIT_INTERCEPT",
+    "LASSO_SELECTION",
+    "TASK3_OUTER_TRAIN_FRACTIONS",
+    "TASK3_INNER_VALIDATION_FRACTION",
+    "TASK3_RIDGE_Z_GRID",
+    "TASK3_ELASTIC_L1_RATIOS",
+    "TASK3_ELASTIC_ALPHA_FRACTIONS",
+    "TASK3_COMPONENT_COUNTS",
+    "TASK3_ELASTIC_MAX_ITER",
+    "TASK3_ELASTIC_TOL",
+    "TASK3_PLS_MAX_ITER",
+    "TASK3_PLS_TOL",
     # DGP & Model & Metrics
     "generate_dgp_data",
+    "generate_dgp_run",
     "get_observed_block",
     "fit_ridge",
     "fit_ridge_path",
+    "fit_ridge_with_validation",
+    "fit_lasso_with_validation",
+    "fit_task3_model_with_validation",
     "eval_oos_performance",
     "expand_beta",
     "param_error",

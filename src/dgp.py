@@ -35,6 +35,17 @@ def generate_dgp_data(
     return S_train, R_train, S_test, R_test, beta_star, P
 
 
+def generate_dgp_run(seed=None, **dgp_parameters):
+    """Generate one reproducible run, including Task 1's column permutation."""
+    S_train, R_train, S_test, R_test, beta_star, P = generate_dgp_data(
+        **dgp_parameters,
+        seed=seed,
+    )
+    rng = np.random.default_rng(seed)
+    permuted_indices = rng.permutation(P)
+    return S_train, R_train, S_test, R_test, beta_star, P, permuted_indices
+
+
 def get_observed_block(
     S_train,
     S_test,
