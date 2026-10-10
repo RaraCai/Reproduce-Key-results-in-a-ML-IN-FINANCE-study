@@ -85,10 +85,11 @@ def add_interpolation_marker(ax, label=r"$cq = 1$"):
     ax.axvline(1.0, label=label, **REF_LINE)
 
 
-def finalize_and_save(fig, ax, *, savepath, title, xlabel, ylabel,
+def finalize_and_save(fig, ax, *, savepath, title=None, xlabel, ylabel,
                       ylim=None, yscale=None, legend=True,
                       loc='upper right', ncol=None):
-    ax.set_title(title)
+    if title is not None:
+        ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     if ylim is not None:
@@ -102,3 +103,61 @@ def finalize_and_save(fig, ax, *, savepath, title, xlabel, ylabel,
         ax.legend(ncol=ncol, loc=loc)
     fig.tight_layout()
     fig.savefig(savepath)
+
+
+def plot_task4_training_dynamics(history, save_dir):
+    epochs = history['epoch']
+    markevery = max(1, len(epochs) // 20)
+    figures = []
+
+    fig, ax = plt.subplots(figsize=FIGSIZE)
+    ax.plot(
+        epochs, history['train_mse'], label='Train MSE',
+        **_get_style(0, markevery),
+    )
+    ax.plot(
+        epochs, history['test_mse'], label='Test MSE',
+        **_get_style(5, markevery),
+    )
+    finalize_and_save(
+        fig, ax,
+        savepath=save_dir / 'task4_train_test_mse.pdf',
+        xlabel='Epoch',
+        ylabel='MSE',
+    )
+    figures.append(fig)
+
+    fig, ax = plt.subplots(figsize=FIGSIZE)
+    ax.plot(epochs, history['test_r2'], **_get_style(1, markevery))
+    finalize_and_save(
+        fig, ax,
+        savepath=save_dir / 'task4_oos_r2.pdf',
+        xlabel='Epoch',
+        ylabel=r'$R^2_{\mathrm{OOS}}$',
+        legend=False,
+    )
+    figures.append(fig)
+
+    fig, ax = plt.subplots(figsize=FIGSIZE)
+    ax.plot(epochs, history['test_sharpe'], **_get_style(6, markevery))
+    finalize_and_save(
+        fig, ax,
+        savepath=save_dir / 'task4_oos_sharpe.pdf',
+        xlabel='Epoch',
+        ylabel='Sharpe',
+        legend=False,
+    )
+    figures.append(fig)
+
+    fig, ax = plt.subplots(figsize=FIGSIZE)
+    ax.plot(epochs, history['complexity'], **_get_style(8, markevery))
+    finalize_and_save(
+        fig, ax,
+        savepath=save_dir / 'task4_network_complexity.pdf',
+        xlabel='Epoch',
+        ylabel=r'$\|W_2\|_1$',
+        legend=False,
+    )
+    figures.append(fig)
+
+    return figures

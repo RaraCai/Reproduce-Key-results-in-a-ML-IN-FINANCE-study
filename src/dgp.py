@@ -2,6 +2,18 @@
 
 import numpy as np
 
+def generate_nonlinear_single_index_data(T, D, U, noise_std=0.5, seed=0):
+    rng = np.random.default_rng(seed)
+
+    X = rng.normal(size=(T, D))
+    latent = X @ U
+    signal = latent + latent**3 / 6.0
+    noise = rng.normal(0.0, noise_std, size=T)
+    R = signal + noise
+
+    return X.astype(np.float32), R.astype(np.float32)
+
+
 def generate_dgp_data(
     T_train = 500,
     T_test = 2000,

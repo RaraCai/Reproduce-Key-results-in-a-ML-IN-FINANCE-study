@@ -1,6 +1,7 @@
 # src/models.py
 
 import numpy as np
+import pandas as pd
 import warnings
 
 from sklearn.cross_decomposition import PLSRegression
@@ -26,6 +27,123 @@ from .config import (
     TASK3_PLS_TOL,
     TASK3_RIDGE_Z_GRID,
 )
+
+
+def get_torch_device():
+    import torch
+
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+def seed_torch(seed):
+    import torch
+
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+
+
+def build_two_layer_net(input_dim, width, device):
+    import torch
+    from torch import nn
+
+    class TwoLayerNet(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.hidden = nn.Linear(input_dim, width)
+            self.output = nn.Linear(width, 1)
+
+        def forward(self, x):
+            x = torch.relu(self.hidden(x))
+            return self.output(x).squeeze(-1)
+
+    return TwoLayerNet().to(device)
+
+
+def evaluate_neural_network(model, X, R, device):
+    import torch
+
+    model.eval()
+    X_tensor = torch.as_tensor(X, dtype=torch.float32, device=device)
+    R_tensor = torch.as_tensor(R, dtype=torch.float32, device=device)
+
+    with torch.no_grad():
+        pred = model(X_tensor)
+        mse = torch.mean((R_tensor - pred) ** 2).item()
+        r2 = 1.0 - mse / torch.mean(R_tensor ** 2).item()
+
+        timing_return = pred * R_tensor
+        expected_return = torch.mean(timing_return).item()
+        second_moment = torch.mean(timing_return ** 2).item()
+        sharpe = (
+            expected_return / np.sqrt(second_moment)
+            if second_moment > 1e-12 else 0.0
+        )
+
+    return {
+        "mse": mse,
+        "r2": r2,
+        "expected_return": expected_return,
+        "sharpe": sharpe,
+    }
+
+
+def neural_network_complexity(model):
+    return model.output.weight.detach().abs().sum().item()
+
+
+def train_two_layer_network(
+    model,
+    X_train,
+    R_train,
+    X_test,
+    R_test,
+    epochs,
+    batch_size,
+    lr,
+    device,
+    seed=0,
+):
+    import torch
+    from torch.utils.data import DataLoader, TensorDataset
+
+    seed_torch(seed)
+    optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+    criterion = torch.nn.MSELoss()
+
+    dataset = TensorDataset(
+        torch.from_numpy(X_train),
+        torch.from_numpy(R_train),
+    )
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+    history = []
+    for epoch in range(epochs):
+        model.train()
+        for xb, yb in loader:
+            xb = xb.to(device)
+            yb = yb.to(device)
+
+            optimizer.zero_grad()
+            pred = model(xb)
+            loss = criterion(pred, yb)
+            loss.backward()
+            optimizer.step()
+
+        train_metrics = evaluate_neural_network(model, X_train, R_train, device)
+        test_metrics = evaluate_neural_network(model, X_test, R_test, device)
+        history.append({
+            "epoch": epoch + 1,
+            "train_mse": train_metrics["mse"],
+            "test_mse": test_metrics["mse"],
+            "test_r2": test_metrics["r2"],
+            "test_return": test_metrics["expected_return"],
+            "test_sharpe": test_metrics["sharpe"],
+            "complexity": neural_network_complexity(model),
+        })
+
+    return pd.DataFrame(history)
+
 
 def fit_ridge_path(X, y, z_values, rcond=1e-12):
     """

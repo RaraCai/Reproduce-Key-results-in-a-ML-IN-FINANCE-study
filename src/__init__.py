@@ -25,14 +25,26 @@ from .config import (
     TASK3_ELASTIC_TOL,
     TASK3_PLS_MAX_ITER,
     TASK3_PLS_TOL,
+    TASK4_DEFAULTS,
 )
-from .dgp import generate_dgp_data, generate_dgp_run, get_observed_block
+from .dgp import (
+    generate_dgp_data,
+    generate_dgp_run,
+    generate_nonlinear_single_index_data,
+    get_observed_block,
+)
 from .models import (
+    build_two_layer_net,
+    evaluate_neural_network,
     fit_lasso_with_validation,
     fit_task3_model_with_validation,
     fit_ridge,
     fit_ridge_path,
     fit_ridge_with_validation,
+    get_torch_device,
+    neural_network_complexity,
+    seed_torch,
+    train_two_layer_network,
 )
 from .metrics import eval_oos_performance, expand_beta, param_error
 
@@ -62,15 +74,23 @@ __all__ = [
     "TASK3_ELASTIC_TOL",
     "TASK3_PLS_MAX_ITER",
     "TASK3_PLS_TOL",
+    "TASK4_DEFAULTS",
     # DGP & Model & Metrics
     "generate_dgp_data",
     "generate_dgp_run",
+    "generate_nonlinear_single_index_data",
     "get_observed_block",
+    "build_two_layer_net",
+    "evaluate_neural_network",
     "fit_ridge",
     "fit_ridge_path",
     "fit_ridge_with_validation",
     "fit_lasso_with_validation",
     "fit_task3_model_with_validation",
+    "get_torch_device",
+    "neural_network_complexity",
+    "seed_torch",
+    "train_two_layer_network",
     "eval_oos_performance",
     "expand_beta",
     "param_error",

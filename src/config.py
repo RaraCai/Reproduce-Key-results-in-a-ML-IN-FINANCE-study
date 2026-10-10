@@ -30,6 +30,18 @@ TASK3_ELASTIC_TOL = 1e-4
 TASK3_PLS_MAX_ITER = 500
 TASK3_PLS_TOL = 1e-6
 
+# ---- Task 4 neural network ----
+TASK4_DEFAULTS = dict(
+	D=100,
+	T_train=2000,
+	T_test=5000,
+	noise_std=0.5,
+	width=256,
+	learning_rate=1e-3,
+	batch_size=128,
+	n_epochs=500,
+)
+
 # ---- Reproducibility ----
 N_RUNS = 20
 SEED = 0
